@@ -7,31 +7,36 @@ import android.hardware.SensorEventListener;
 import android.support.v7.app.AppCompatActivity;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.FloatMath;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.media.MediaPlayer;
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView answerText;
     private SensorManager sensorManager;
+    private MediaPlayer mediaPlayer;
     private Sensor accelerometer;
-    private float acceleration;
-    private float currentAcceleration;
-    private float previousAcceleration;
+    private double acceleration;
+    private double currentAcceleration;
+    private double previousAcceleration;
     private final SensorEventListener sensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
-            float x = event.values[0];
-            float y = event.values[1];
-            float z = event.values[2];
+            double x = event.values[0];
+            double y = event.values[1];
+            double z = event.values[2];
             previousAcceleration = currentAcceleration;
-            currentAcceleration = FloatMath.sqrt(x * x + y * y + z * z);
-            float delta = currentAcceleration - previousAcceleration;
+            currentAcceleration = Math.sqrt(x * x + y * y + z * z);
+            double delta = currentAcceleration - previousAcceleration;
             acceleration = acceleration * 0.9f + delta;
             if(acceleration > 15) {
-                Toast toast = Toast.makeText(getApplication(), "Divice has shaken", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getApplication(), "Device has shaken", Toast.LENGTH_SHORT);
                 toast.show();
+                MediaPlayer mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.yu_mo_gwai_gui_xd);
+                mediaPlayer.start();
+                String ans = Predictions.get().getPrediction();
+                answerText.setText(ans);
             }
         }
 
